@@ -53,7 +53,7 @@ case class DiagE private (override val n: Int, r: Int, l: Int) extends SPL[Compl
     override def implement(inputs: Seq[Sig[Complex[Double]]]): Seq[Sig[Complex[Double]]] = (0 until K).map(p => 
       val twiddles = Vector.tabulate(T)(c => coef((c * K) + p))
       val twiddleHW = hw match // The hardware datatype used for the twiddles is the same as the one used by the data, EXCEPT in case of FixedPoint: to maximize precision, we store as many fractional bits as possible, as twiddles are in the unit circle. 
-        case ComplexHW(FixedPoint(magnitude, fractional)) => ComplexHW(FixedPoint(2, magnitude + fractional - 2))
+        case ComplexHW(fp @ FixedPoint(magnitude, fractional, _)) => ComplexHW(FixedPoint(2, magnitude + fractional - 2, fp.rounding))
         case _ => hw
       val control = Timer(T)
       val twiddle = ROM(twiddles, control)(using twiddleHW)
