@@ -1,9 +1,9 @@
-set script_dir [file dirname [file normalize [info script]]]
-set repo_root [file normalize [file join $script_dir ".." ".." ".."]]
+set home $::env(HOME)
+set repo_root "/run/host/var/home/alex/git/SGen"
 set reports_dir [file join $repo_root "reports" "libero"]
 set project_name "sgen_dftcompact_2048_4x18_pf"
-set project_dir [file join $::env(HOME) "libero_ws" $project_name]
-set source_file [file join $repo_root "designs" "generated" "sgen" "dftcompact_2048_4x18.v"]
+set project_dir [file join $home "libero_ws" $project_name]
+set source_file [file join $home "libero_ws" "hdl" "dftcompact_2048_4x18.v"]
 
 file mkdir $reports_dir
 file delete -force $project_dir
@@ -23,6 +23,7 @@ new_project \
   -use_enhanced_constraint_flow 1
 
 import_files -convert_EDN_to_HDL 0 -library {work} -hdl_source $source_file
+build_design_hierarchy
 set_root -module {main::work}
 
 configure_tool -name {SYNTHESIZE} -params {SYNPLIFY_OPTIONS:set_option -seqshift_to_uram 1; set_option -infer_seqShift 1}

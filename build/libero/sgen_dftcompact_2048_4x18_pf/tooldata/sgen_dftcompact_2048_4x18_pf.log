@@ -1,0 +1,16 @@
+Project Name: sgen_dftcompact_2048_4x18_pf
+Location: /run/host/var/home/alex/git/SGen/build/libero/sgen_dftcompact_2048_4x18_pf
+Description: 
+Preferred HDL Type: Verilog
+
+#-----------------------------------------------------
+                  Device Details
+#-----------------------------------------------------
+
+Part Number    : MPFS095TL-FCSG325E
+Family         : PolarFireSoC
+Die            : MPFS095TL
+Package        : FCSG325
+Speed          : STD
+Core Voltage   : 1.0
+Range          : EXT
