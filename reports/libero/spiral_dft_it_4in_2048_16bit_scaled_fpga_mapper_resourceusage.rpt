@@ -1,0 +1,42 @@
+Resource Usage Report for spiral_dft_it_4in_2048_16bit_scaled 
+
+Mapping to part: mpfs095tfcvg784std
+Cell usage:
+CLKINT          1 use
+CFG1           5 uses
+CFG2           210 uses
+CFG3           1814 uses
+CFG4           1031 uses
+
+Carry cells:
+ARI1            308 uses - used for arithmetic functions
+ARI1            640 uses - used for Wide-Mux implementation
+Total ARI1      948 uses
+
+
+Sequential Cells: 
+SLE            2504 uses
+
+DSP Blocks:    8 of 292 (2%)
+ MACC_PA:         8 Mults
+
+I/O ports: 260
+I/O primitives: 260
+INBUF          131 uses
+OUTBUF         129 uses
+
+
+Global Clock Buffers: 1
+
+Total LUTs:    4008
+
+Extra resources required for RAM and MACC_PA interface logic during P&R:
+
+RAM64X12 Interface Logic : SLEs = 0; LUTs = 0;
+RAM1K20  Interface Logic : SLEs = 576; LUTs = 576;
+MACC_PA     Interface Logic : SLEs = 288; LUTs = 288;
+MACC_PA_BC_ROM     Interface Logic : SLEs = 0; LUTs = 0;
+
+Total number of SLEs after P&R:  2504 + 0 + 576 + 288 = 3368;
+Total number of LUTs after P&R:  4008 + 0 + 576 + 288 = 4872;
+
