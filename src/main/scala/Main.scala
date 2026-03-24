@@ -51,6 +51,7 @@ object Main:
     var zip = false
     var logo = true
     var scalingFactor = "1"
+    var rounding: Int = 0  // 0=truncate, 1=half-LSB round, 2=jamming
 
     var _n: Option[Int] = None
     def n: Int = _n match
@@ -74,7 +75,12 @@ object Main:
     def r_=(value:Int) = _r = Some(value)
 
     var _hw: Option[HW[?]] = None
+    def applyRounding(hw: HW[?], mode: Int): HW[?] = hw match
+      case ComplexHW(fp: FixedPoint) => ComplexHW(FixedPoint(fp.magnitude, fp.fractional, mode))
+      case fp: FixedPoint => FixedPoint(fp.magnitude, fp.fractional, mode)
+      case other => other
     def hw: HW[?] = _hw match
+      case Some(k) if rounding != 0 => applyRounding(k, rounding)
       case Some(k) => k
       case _ => Unsigned(16)
     def hw_=(value:HW[?]) = _hw = Some(value)
@@ -139,6 +145,8 @@ object Main:
       case "-rtlgraph" => rtlgraph = true
       case "-zip" => zip = true
       case "-nologo" => logo = false
+      case "-round" => rounding = 1
+      case "-jam" => rounding = 2
       case "lp" =>
         val matrices = mutable.Queue[Matrix[F2]]()
         if (argsQ.isEmpty) throw new IllegalArgumentException("Invertible bit-matrices expected.")

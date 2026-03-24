@@ -32,8 +32,14 @@ import ir.rtl.signals.{Const, Minus, Plus, Sig, Times}
  *
  * @param magnitude Number of bits of the integer part
  * @param fractional Number of bits of the fractional part
+ * @param rounding Rounding mode for fixed-point multiplications:
+ *                 0 = truncation (default, cheapest, has systematic negative bias),
+ *                 1 = half-LSB rounding (adds constant 2^(shift-1) before truncation,
+ *                     eliminates bias, costs 1 adder per multiply),
+ *                 2 = jamming / sticky-bit (ORs discarded bits into result LSB,
+ *                     nearly eliminates bias, costs only OR gates — no adder/DSP).
  */
-case class FixedPoint(magnitude: Int, fractional: Int) extends HW[Double](magnitude + fractional):
+case class FixedPoint(magnitude: Int, fractional: Int, rounding: Int = 0) extends HW[Double](magnitude + fractional):
   override def plus(lhs: Sig[Double], rhs: Sig[Double]): Sig[Double] = FixPlus(lhs, rhs)
 
   override def minus(lhs: Sig[Double], rhs: Sig[Double]): Sig[Double] = FixMinus(lhs, rhs)
@@ -94,11 +100,32 @@ case class FixedPoint(magnitude: Int, fractional: Int) extends HW[Double](magnit
           val shift = this.rhs.hw.bitsOf(value).lowestSetBit - this.rhs.hw.asInstanceOf[FixedPoint].fractional
           if shift > 0 then
             ir.rtl.Concat(Seq(ir.rtl.Tap(cp(this.lhs), 0 until (this.lhs.hw.size - shift)),ir.rtl.Const(shift,0)))
+          else if shift == 0 then
+            cp(this.lhs)
           else
-            ir.rtl.Concat(Seq(ir.rtl.Const(-shift, 0), ir.rtl.Tap(cp(this.lhs), (-shift) until this.lhs.hw.size)))
+            // Arithmetic right shift: sign-extend with copies of the MSB
+            val signBit = ir.rtl.Tap(cp(this.lhs), this.lhs.hw.size - 1 until this.lhs.hw.size)
+            ir.rtl.Concat(Seq.fill(-shift)(signBit) :+ ir.rtl.Tap(cp(this.lhs), (-shift) until this.lhs.hw.size))
         case _ =>
           val shift = this.rhs.hw.asInstanceOf[FixedPoint].fractional
-          ir.rtl.Tap(ir.rtl.Times(cp(this.lhs), cp(this.rhs)), shift until (shift + this.lhs.hw.size))
+          val product = ir.rtl.Times(cp(this.lhs), cp(this.rhs))
+          val resultSize = this.lhs.hw.size
+          if rounding == 1 && shift > 0 then
+            // Half-LSB rounding: add 2^(shift-1) before truncation
+            val productSize = resultSize + this.rhs.hw.size
+            val roundConst = ir.rtl.Const(productSize, BigInt(1) << (shift - 1))
+            ir.rtl.Tap(ir.rtl.Plus(Seq(product, roundConst)), shift until (shift + resultSize))
+          else if rounding == 2 && shift > 0 then
+            // Jamming / sticky-bit: OR discarded bits into result LSB (no adder/DSP needed)
+            val truncated = ir.rtl.Tap(product, shift until (shift + resultSize))
+            val discarded = ir.rtl.Tap(product, 0 until shift)
+            val sticky = ir.rtl.Not(ir.rtl.Equals(discarded, ir.rtl.Const(shift, 0)))
+            val resultLsb = ir.rtl.Tap(truncated, 0 until 1)
+            val newLsb = ir.rtl.Or(Seq(resultLsb, sticky))
+            val resultMsbs = ir.rtl.Tap(truncated, 1 until resultSize)
+            ir.rtl.Concat(Seq(resultMsbs, newLsb))
+          else
+            ir.rtl.Tap(product, shift until (shift + resultSize))
 
   override def MID_VALUE: Double = valueOf(BigInt(1) << ((size - 1)/2))
 
