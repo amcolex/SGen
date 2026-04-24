@@ -1,0 +1,13 @@
+# Microsemi Corp.
+# Date: 2026-Mar-24 16:48:18
+Libero Release : 2025.2
+Libero Version : 2025.2.0.14
+Operating System Name : Linux
+Linux Distribution Description:	Ubuntu 22.04.5 LTS
+
+Ram Size : 30.83 GB (usable)
+OS Type : 64-bit
+
+Environment Variables : 
+---------------------
+	Please enable the option from 'Preferences => Startup => Export environment variables' to get this info.

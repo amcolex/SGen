@@ -1,0 +1,9 @@
+Synthesis Status : Successful - Tue Mar 24 15:45:55 2026
+Revision Name : quartus_spiral_dft_2048_4in_16_ac135
+Top-level Entity Name : spiral_dft_it_4in_2048_16bit_scaled
+Family : Agilex 3
+Quartus Prime Version : 25.3.1 Build 100 12/19/2025 Patches 1.02 SC Pro Edition
+Device : A3CW135BM16AE6S
+Logic utilization estimate (in ALMs) : 900 / 45,800 ( 2 % )
+Total dedicated logic registers : 2975
+Estimated DSP Blocks Post-Merging : 4

@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml-stylesheet href="rptstyle.xsl" type="text/xsl" ?>
+<doc>
+<title>Compile Report</title>
+<text>Microchip Technology Inc. - Microchip Libero Software Release 2025.2 (Version 2025.2.0.14)</text>
+<text>Date: Tue Mar 24 15:33:51 2026
+</text>
+<section><name>Device Selection</name></section>
+<table>
+<header>
+</header>
+<row>
+ <cell>Family</cell>
+ <cell>PolarFireSoC</cell>
+</row>
+<row>
+ <cell>Device</cell>
+ <cell>MPFS095TL</cell>
+</row>
+<row>
+ <cell>Package</cell>
+ <cell>FCSG325</cell>
+</row>
+<row>
+ <cell>Speed Grade</cell>
+ <cell>STD</cell>
+</row>
+<row>
+ <cell>Core Voltage</cell>
+ <cell>1.0V</cell>
+</row>
+<row>
+ <cell>Part Range</cell>
+ <cell>EXT</cell>
+</row>
+<row>
+ <cell>Default I/O technology</cell>
+ <cell>LVCMOS 1.8V</cell>
+</row>
+</table>
+<section><name>Source Files</name></section>
+<table>
+<header>
+</header>
+<row>
+ <cell>Topcell</cell>
+ <cell>spiral_dft_it_4in_2048_16bit_scaled</cell>
+</row>
+<row>
+ <cell>Format</cell>
+ <cell>Verilog</cell>
+</row>
+<row>
+ <cell>Source</cell>
+ <cell>/var/home/alex/distrohomes/ubuntu22/libero_ws/spiral_dft_2048_4in_16_pf/synthesis/spiral_dft_it_4in_2048_16bit_scaled.vm</cell>
+</row>
+</table>
+<section><name>Options</name></section>
+<table>
+<header>
+</header>
+<row>
+ <cell>Limit the number of high fanout nets to display to</cell>
+ <cell>10</cell>
+</row>
+</table>
+<section><name>Resource Usage</name></section>
+<table>
+<header>
+ <cell>Type</cell>
+ <cell>Used</cell>
+ <cell>Total</cell>
+ <cell>Percentage</cell>
+</header>
+<row>
+ <cell>4LUT</cell>
+ <cell>4871</cell>
+ <cell>93516</cell>
+ <cell>5.21</cell>
+</row>
+<row>
+ <cell>DFF</cell>
+ <cell>3368</cell>
+ <cell>93516</cell>
+ <cell>3.60</cell>
+</row>
+<row>
+ <cell>User I/O</cell>
+ <cell>260</cell>
+ <cell>80</cell>
+ <cell>325.00</cell>
+</row>
+<row>
+ <cell>-- Single-ended I/O</cell>
+ <cell>260</cell>
+ <cell>80</cell>
+ <cell>325.00</cell>
+</row>
+<row>
+ <cell>-- Differential I/O Pairs</cell>
+ <cell>0</cell>
+ <cell>40</cell>
+ <cell>0.00</cell>
+</row>
+<row>
+ <cell>-- I/Os using I/O Registers</cell>
+ <cell>0</cell>
+ <cell>80</cell>
+ <cell>0.00</cell>
+</row>
+<row>
+ <cell>I/O Register Flip-Flops </cell>
+ <cell>0</cell>
+ <cell>240</cell>
+ <cell>0.00</cell>
+</row>
+<row>
+ <cell>-- Input  I/O Flip-Flops </cell>
+ <cell>0</cell>
+ <cell>80</cell>
+ <cell>0.00</cell>
+</row>
+<row>
+ <cell>-- Output I/O Flip-Flops </cell>
+ <cell>0</cell>
+ <cell>80</cell>
+ <cell>0.00</cell>
+</row>
+<row>
+ <cell>-- Enable I/O Flip-Flops </cell>
+ <cell>0</cell>
+ <cell>80</cell>
+ <cell>0.00</cell>
+</row>
+<row>
+ <cell>uSRAM</cell>
+ <cell>0</cell>
+ <cell>876</cell>
+ <cell>0.00</cell>
+</row>
+<row>
+ <cell>LSRAM</cell>
+ <cell>16</cell>
+ <cell>308</cell>
+ <cell>5.19</cell>
+</row>
+<row>
+ <cell>Math</cell>
+ <cell>8</cell>
+ <cell>292</cell>
+ <cell>2.74</cell>
+</row>
+<row>
+ <cell>H-Chip Global</cell>
+ <cell>1</cell>
+ <cell>48</cell>
+ <cell>2.08</cell>
+</row>
+<row>
+ <cell>PLL</cell>
+ <cell>0</cell>
+ <cell>8</cell>
+ <cell>0.00</cell>
+</row>
+<row>
+ <cell>DLL</cell>
+ <cell>0</cell>
+ <cell>8</cell>
+ <cell>0.00</cell>
+</row>
+<row>
+ <cell>Transceiver Lanes</cell>
+ <cell>0</cell>
+ <cell>2</cell>
+ <cell>0.00</cell>
+</row>
+<row>
+ <cell>Transceiver PCIe</cell>
+ <cell>0</cell>
+ <cell>2</cell>
+ <cell>0.00</cell>
+</row>
+<row>
+ <cell>MSS</cell>
+ <cell>0</cell>
+ <cell>1</cell>
+ <cell>0.00</cell>
+</row>
+</table>
+<section><name>Detailed Logic Resource Usage</name></section>
+<table>
+<header>
+ <cell>Type</cell>
+ <cell>4LUT</cell>
+ <cell>DFF</cell>
+</header>
+<row>
+ <cell>Fabric Logic</cell>
+ <cell>4007</cell>
+ <cell>2504</cell>
+</row>
+<row>
+ <cell>uSRAM Interface Logic</cell>
+ <cell>0</cell>
+ <cell>0</cell>
+</row>
+<row>
+ <cell>LSRAM Interface Logic</cell>
+ <cell>576</cell>
+ <cell>576</cell>
+</row>
+<row>
+ <cell>Math Interface Logic</cell>
+ <cell>288</cell>
+ <cell>288</cell>
+</row>
+<row>
+ <cell>Total Used</cell>
+ <cell>4871</cell>
+ <cell>3368</cell>
+</row>
+</table>
+<section><name>Detailed Carry Chains Resource Usage</name></section>
+<table>
+<header>
+</header>
+<row>
+ <cell>Length</cell>
+ <cell>Used</cell>
+</row>
+<row>
+ <cell>6</cell>
+ <cell>1</cell>
+</row>
+<row>
+ <cell>9</cell>
+ <cell>1</cell>
+</row>
+<row>
+ <cell>10</cell>
+ <cell>6</cell>
+</row>
+<row>
+ <cell>11</cell>
+ <cell>3</cell>
+</row>
+<row>
+ <cell>16</cell>
+ <cell>4</cell>
+</row>
+<row>
+ <cell>17</cell>
+ <cell>8</cell>
+</row>
+<row>
+ <cell>Total</cell>
+ <cell>23</cell>
+</row>
+</table>
+<section><name>Detailed 4LUT Groups Resource Usage</name></section>
+<table>
+<header>
+</header>
+<row>
+ <cell>Length</cell>
+ <cell>Used</cell>
+</row>
+<row>
+ <cell>2</cell>
+ <cell>300</cell>
+</row>
+<row>
+ <cell>5</cell>
+ <cell>4</cell>
+</row>
+<row>
+ <cell>10</cell>
+ <cell>2</cell>
+</row>
+<row>
+ <cell>Total</cell>
+ <cell>306</cell>
+</row>
+</table>
+<section><name>Detailed Math Chains Resource Usage</name></section>
+<table>
+<header>
+</header>
+<row>
+ <cell>Length</cell>
+ <cell>Used</cell>
+</row>
+<row>
+ <cell>1</cell>
+ <cell>8</cell>
+</row>
+<row>
+ <cell>Total</cell>
+ <cell>8</cell>
+</row>
+</table>
+<section><name>I/O Function</name></section>
+<table>
+<header>
+ <cell>Type</cell>
+ <cell>w/o register</cell>
+ <cell>w/ register</cell>
+ <cell>w/ DDR register</cell>
+</header>
+<row>
+ <cell>Input I/O</cell>
+ <cell>131</cell>
+ <cell>0</cell>
+ <cell>0</cell>
+</row>
+<row>
+ <cell>Output I/O</cell>
+ <cell>129</cell>
+ <cell>0</cell>
+ <cell>0</cell>
+</row>
+<row>
+ <cell>Bidirectional I/O</cell>
+ <cell>0</cell>
+ <cell>0</cell>
+ <cell>0</cell>
+</row>
+<row>
+ <cell>Differential Input I/O Pairs</cell>
+ <cell>0</cell>
+ <cell>0</cell>
+ <cell>0</cell>
+</row>
+<row>
+ <cell>Differential Output I/O Pairs</cell>
+ <cell>0</cell>
+ <cell>0</cell>
+ <cell>0</cell>
+</row>
+</table>
+<section><name>Nets assigned to chip global resources</name></section>
+<table>
+<header>
+ <cell>Fanout</cell>
+ <cell>Type</cell>
+ <cell>Name</cell>
+</header>
+<row>
+ <cell>2544</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : NN_1</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: I_1/U0_RGB1</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Source: NETLIST</cell>
+</row>
+</table>
+<section><name>Nets assigned to row global resources</name></section>
+<table>
+<header>
+ <cell>Fanout</cell>
+ <cell>Type</cell>
+ <cell>Name</cell>
+</header>
+</table>
+<section><name>High fanout nets</name></section>
+<table>
+<header>
+ <cell>Fanout</cell>
+ <cell>Type</cell>
+ <cell>Name</cell>
+</header>
+<row>
+ <cell>1700</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : reset_c</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: reset_ibuf</cell>
+</row>
+<row>
+ <cell>1084</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a119[4]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[4]</cell>
+</row>
+<row>
+ <cell>598</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418_instList35437_DirSumInst35440_codeBlockIsnt35443_a119[5]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[5]</cell>
+</row>
+<row>
+ <cell>518</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a119[3]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[3]</cell>
+</row>
+<row>
+ <cell>415</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a119[2]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[2]</cell>
+</row>
+<row>
+ <cell>387</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a129[0]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30619/res[0]_0_0_0[0]</cell>
+</row>
+<row>
+ <cell>375</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a119[8]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[8]</cell>
+</row>
+<row>
+ <cell>361</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a119[1]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[1]</cell>
+</row>
+<row>
+ <cell>295</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a119[6]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[6]</cell>
+</row>
+<row>
+ <cell>257</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/state_5_Z[0]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/state_5[0]</cell>
+</row>
+</table>
+<section><name>High fanout nets (through buffer trees)</name></section>
+<table>
+<header>
+ <cell>Fanout</cell>
+ <cell>Type</cell>
+ <cell>Name</cell>
+</header>
+<row>
+ <cell>1700</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : reset_c</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: reset_ibuf</cell>
+</row>
+<row>
+ <cell>1084</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a119[4]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[4]</cell>
+</row>
+<row>
+ <cell>598</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418_instList35437_DirSumInst35440_codeBlockIsnt35443_a119[5]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[5]</cell>
+</row>
+<row>
+ <cell>518</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a119[3]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[3]</cell>
+</row>
+<row>
+ <cell>415</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a119[2]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[2]</cell>
+</row>
+<row>
+ <cell>387</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a129[0]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30619/res[0]_0_0_0[0]</cell>
+</row>
+<row>
+ <cell>375</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a119[8]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[8]</cell>
+</row>
+<row>
+ <cell>361</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a119[1]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[1]</cell>
+</row>
+<row>
+ <cell>295</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/a119[6]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/instList35437/DirSumInst35440/codeBlockIsnt35443/sub30504/res[0]_0_0_0[6]</cell>
+</row>
+<row>
+ <cell>257</cell>
+ <cell>INT_NET</cell>
+ <cell>Net   : IComposeInst35418/state_5_Z[0]</cell>
+</row>
+<row>
+ <cell></cell>
+ <cell></cell>
+ <cell>Driver: IComposeInst35418/state_5[0]</cell>
+</row>
+</table>
+</doc>

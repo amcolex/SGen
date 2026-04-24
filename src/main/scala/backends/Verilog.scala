@@ -40,9 +40,57 @@ object Verilog {
      * @return a string containing the verilog code of the module
      */
     def toVerilog: String =
+      val delayRamThreshold = 64
+
+      def addrBitsFor(depth: Int): Int =
+        math.ceil(math.log(depth.toDouble) / math.log(2.0)).toInt.max(1)
+
+      // Detect large all-constant Mux nodes (twiddle ROMs) that can use BRAM
+      val romThreshold = 64
+      def isConstRom(m: Mux): Boolean =
+        m.inputs.size > romThreshold && m.inputs.forall(_.isInstanceOf[Const])
+
+      val constRomSet: Set[Component] = mod.components.collect {
+        case m: Mux if m.address.size > 1 && isConstRom(m) => m: Component
+      }.toSet
+
+      // Merge deep registers into wide memory arrays, grouping nearby cycle counts
+      // to avoid wasting LSRAM on narrow signals with slightly different delays.
+      val delayMergeWindow = 16
+      val mergedGroupData: Map[Int, Seq[(Component, Component, Int, Int, Int)]] = {
+        val deepRegs = mod.components.collect {
+          case cur@Register(input, cycles) if cycles > delayRamThreshold => (cycles, cur, input)
+        }.sortBy(_._1)
+        val groups = scala.collection.mutable.ArrayBuffer[(Int, scala.collection.mutable.ArrayBuffer[(Int, Component, Component)])]()
+        deepRegs.foreach { case (cycles, comp, input) =>
+          if (groups.nonEmpty && cycles - groups.last._1 <= delayMergeWindow)
+            groups.last._2 += ((cycles, comp, input))
+          else
+            groups += ((cycles, scala.collection.mutable.ArrayBuffer((cycles, comp, input))))
+        }
+        groups.toSeq.map { case (baseCycles, entries) =>
+          var offset = 0
+          val withOffsets = entries.toSeq.map { case (cycles, comp, input) =>
+            val o = offset
+            offset += comp.size
+            (comp, input, comp.size, o, cycles - baseCycles)
+          }
+          baseCycles -> withOffsets
+        }.toMap
+      }
+
+      val mergedLookup: Map[Component, (Int, Int, Int)] = mergedGroupData.flatMap {
+        case (baseCycles, entries) => entries.map { case (comp, _, _, offset, extraDelay) => comp -> (baseCycles, offset, extraDelay) }
+      }
+
+      val mergedTotalWidth: Map[Int, Int] = mergedGroupData.map {
+        case (baseCycles, entries) => baseCycles -> entries.map(_._3).sum
+      }
+
       // Get IDs for each regular RTL nodes. An RTL node may use several ids.
       val indexes = HashMap.from(mod.components.zip(mod.components.map {
         case _: Input | _: Output | _: Wire | _: Const => 0
+        case Register(_, cycles) if cycles > delayRamThreshold => 1
         case Register(_, cycles) if cycles > 1 => 2
         case RAM(_, _, _) => 2
         case _ => 1
@@ -57,14 +105,72 @@ object Verilog {
         case Const(size, value) => s"$size'd$value"
         case _ => s"s${indexes(comp) + internal}"
 
+      // Merged memory declarations: depth-1 BRAM + pipeline register for timing
+      val mergedDecls = mergedGroupData.toSeq.sortBy(_._1).map { case (baseCycles, entries) =>
+        val tw = mergedTotalWidth(baseCycles)
+        val ramDepth = baseCycles - 1
+        val ab = addrBitsFor(ramDepth)
+        val twStr = if (tw > 1) s"[${tw - 1}:0] " else ""
+        val abStr = if (ab > 1) s"[${ab - 1}:0] " else ""
+        val memDecl =
+          s"  reg ${twStr}dly_mem_$baseCycles [${ramDepth - 1}:0]; // synthesis attribute ram_style of dly_mem_$baseCycles is block\n" +
+          s"  reg ${twStr}dly_rdata_$baseCycles;\n" +
+          s"  reg ${twStr}dly_rdata_${baseCycles}_q;\n" +
+          s"  reg ${abStr}dly_wr_$baseCycles;\n" +
+          s"  wire ${abStr}dly_rd_$baseCycles = (dly_wr_$baseCycles == $ab'd${ramDepth - 1}) ? $ab'd0 : dly_wr_$baseCycles + $ab'd1;\n"
+        val extraDecls = entries.collect { case (_, _, size, offset, extraDelay) if extraDelay > 0 =>
+          val sizeStr = if (size > 1) s"[${size - 1}:0] " else ""
+          if (extraDelay == 1)
+            s"  reg ${sizeStr}dly_xtra_${baseCycles}_$offset;\n"
+          else
+            s"  reg ${sizeStr}dly_xtra_${baseCycles}_$offset [${extraDelay - 1}:0];\n"
+        }.mkString("")
+        memDecl + extraDecls
+      }.mkString("")
+
+      // Const-ROM Mux nodes that are consumed by a Register(mux, 1)
+      val constRomWithReg: Map[Component, Component] = mod.components.collect {
+        case cur@Register(m: Mux, cycles) if cycles == 1 && constRomSet.contains(m) => (m: Component) -> (cur: Component)
+      }.toMap
+
+      // Registers that read directly from a const-ROM (BRAM read replaces both)
+      val constRomReaders: Set[Component] = mod.components.collect {
+        case cur@Register(m: Mux, cycles) if cycles == 1 && constRomSet.contains(m) => cur: Component
+      }.toSet
+
+      // ROM address components — prevent retiming from decomposing ROMs
+      val constRomAddresses: Set[Component] = mod.components.collect {
+        case m@Mux(address, _) if constRomWithReg.contains(m) => address
+      }.toSet
+
+      // Const-ROM declarations: BRAM arrays with initial values + adjacent output register
+      val constRomDecls = mod.components.collect {
+        case m@Mux(address, inputs) if constRomWithReg.contains(m) =>
+          val reader = constRomWithReg(m)
+          val name = getName(m)
+          val readerName = getName(reader)
+          val depth = inputs.size
+          val w = m.size
+          val wStr = if (w > 1) s"[${w - 1}:0] " else ""
+          val initLines = inputs.zipWithIndex.map { case (Const(sz, v), i) => s"    ${name}_rom[$i] = $sz'd$v;" case _ => "" }.mkString("\n")
+          s"  reg ${wStr}${name}_rom [${depth - 1}:0] /* synthesis syn_romstyle = \"block_ram\" */;\n" +
+          s"  initial begin\n$initLines\n  end\n"
+      }.mkString("")
 
       val declarations = (mod.components.flatMap {
         case _: Output | _: Input | _: Const | _: Wire => Seq()
+        case cur: Mux if constRomWithReg.contains(cur) => Seq()
         case cur@Mux(address, inputs) if address.size > 1 => Seq(s"reg ${if (cur.size != 1) s"[${cur.size - 1}:0] " else ""}${getName(cur)};")
+        case cur@Register(_, cycles) if cycles == 1 && constRomReaders.contains(cur) =>
+          Seq(s"(* syn_allow_retiming = 0, syn_preserve = 1 *) reg ${if (cur.size != 1) s"[${cur.size - 1}:0] " else ""}${getName(cur)};")
+        case cur@Register(_, cycles) if cycles == 1 && constRomAddresses.contains(cur) =>
+          Seq(s"(* syn_allow_retiming = 0 *) reg ${if (cur.size != 1) s"[${cur.size - 1}:0] " else ""}${getName(cur)};")
         case cur@Register(_, cycles) if cycles == 1 => Seq(s"reg ${if (cur.size != 1) s"[${cur.size - 1}:0] " else ""}${getName(cur)};")
         case cur@Register(_, cycles) if cycles == 2 => Seq(
           s"reg ${if (cur.size != 1) s"[${cur.size - 1}:0] " else ""}${getName(cur, 1)};",
           s"reg ${if (cur.size != 1) s"[${cur.size - 1}:0] " else ""}${getName(cur)};")
+        case cur@Register(_, cycles) if cycles > delayRamThreshold =>
+          Seq(s"wire ${if (cur.size != 1) s"[${cur.size - 1}:0] " else ""}${getName(cur)};")
         case cur@Register(_, cycles) => Seq(
           s"reg ${if (cur.size != 1) s"[${cur.size - 1}:0] " else ""}${getName(cur, 1)} [${cycles - 1}:0];",
           s"wire ${if (cur.size != 1) s"[${cur.size - 1}:0] " else ""}${getName(cur)};")
@@ -86,16 +192,58 @@ object Verilog {
         case Not(input) => Some(s"~${getName(input)}")
         case Concat(inputs) => Some(inputs.map(getName(_)).mkString("{",", ","}"))
         case Tap(input, range) => Some(s"${getName(input)}[${if (range.size > 1) s"${range.last}:" else ""}${range.start}]")
-        case Register(input, cycles) if cycles > 2 => Some(s"${getName(cur,1)} [${cycles - 1}]")
+        case Register(input, cycles) if cycles > 2 && cycles <= delayRamThreshold => Some(s"${getName(cur,1)} [${cycles - 1}]")
+        case Register(_, cycles) if cycles > delayRamThreshold =>
+          val (baseCycles, offset, extraDelay) = mergedLookup(cur)
+          if (extraDelay == 0) {
+            val tw = mergedTotalWidth(baseCycles)
+            if (cur.size == tw) Some(s"dly_rdata_${baseCycles}_q")
+            else if (cur.size > 1) Some(s"dly_rdata_${baseCycles}_q[${offset + cur.size - 1}:$offset]")
+            else Some(s"dly_rdata_${baseCycles}_q[$offset]")
+          } else if (extraDelay == 1) {
+            Some(s"dly_xtra_${baseCycles}_$offset")
+          } else {
+            Some(s"dly_xtra_${baseCycles}_$offset[${extraDelay - 1}]")
+          }
         case Mux(address, inputs) if address.size == 1 => Some(s"${getName(address)} ? ${getName(inputs.last)} : ${getName(inputs.head)}")
         case _ => None
       ).map((cur, _))).map((cur, rhs) => s"  assign ${getName(cur)} = $rhs;\n").mkString("")
 
+      // Merged memory read/write with pipeline register (depth-1 BRAM + 1 pipeline = original delay)
+      val mergedSeq = mergedGroupData.toSeq.sortBy(_._1).map { case (baseCycles, entries) =>
+        val ramDepth = baseCycles - 1
+        val tw = mergedTotalWidth(baseCycles)
+        val ab = addrBitsFor(ramDepth)
+        val writeDataParts = entries.reverse.map { case (_, input, _, _, _) => getName(input) }
+        val writeData = if (writeDataParts.size == 1) writeDataParts.head else writeDataParts.mkString("{", ", ", "}")
+        val memOps =
+          s"      dly_rdata_$baseCycles <= dly_mem_$baseCycles[dly_rd_$baseCycles];\n" +
+          s"      dly_rdata_${baseCycles}_q <= dly_rdata_$baseCycles;\n" +
+          s"      dly_mem_$baseCycles[dly_wr_$baseCycles] <= $writeData;\n" +
+          s"      dly_wr_$baseCycles <= (dly_wr_$baseCycles == $ab'd${ramDepth - 1}) ? $ab'd0 : dly_wr_$baseCycles + $ab'd1;\n"
+        val extraOps = entries.collect { case (_, _, size, offset, extraDelay) if extraDelay > 0 =>
+          val readBits =
+            if (size == tw) s"dly_rdata_${baseCycles}_q"
+            else if (size > 1) s"dly_rdata_${baseCycles}_q[${offset + size - 1}:$offset]"
+            else s"dly_rdata_${baseCycles}_q[$offset]"
+          if (extraDelay == 1)
+            s"      dly_xtra_${baseCycles}_$offset <= $readBits;\n"
+          else
+            s"      dly_xtra_${baseCycles}_$offset[0] <= $readBits;\n" +
+            s"      for (i = 1; i < $extraDelay; i = i + 1)\n" +
+            s"        dly_xtra_${baseCycles}_$offset[i] <= dly_xtra_${baseCycles}_$offset[i - 1];\n"
+        }.mkString("")
+        memOps + extraOps
+      }.mkString("")
+
       val sequential = mod.components.flatMap {
+        case cur@Register(m: Mux, cycles) if cycles == 1 && constRomWithReg.contains(m) =>
+          Seq(s"${getName(cur)} <= ${getName(m)}_rom[${getName(m.address)}];")
         case cur@Register(input, cycles) if cycles == 1 => Seq(s"${getName(cur)} <= ${getName(input)};")
         case cur@Register(input, cycles) if cycles == 2 => Seq(
           s"${getName(cur, 1)} <= ${getName(input)};",
           s"${getName(cur)} <= ${getName(cur, 1)};")
+        case cur@Register(input, cycles) if cycles > delayRamThreshold => Seq()
         case cur@Register(input, cycles) => Seq(
           s"${getName(cur, 1)} [0] <= ${getName(input)};",
           s"for (i = 1; i < $cycles; i = i + 1)",
@@ -104,9 +252,10 @@ object Verilog {
           s"${getName(cur, 1)} [${getName(wr)}] <= ${getName(data)};",
           s"${getName(cur)} <= ${getName(cur, 1)} [${getName(rd)}];")
         case _ => Seq()
-      }.map(s => s"      $s\n").mkString("")
+      }.map(s => s"      $s\n").mkString("") + mergedSeq
 
       val combinatorial = mod.components.flatMap {
+        case cur: Mux if constRomWithReg.contains(cur) => Seq()
         case cur@Mux(address, inputs) if address.size > 1 =>
           "always @(*)" +:
             s"  case(${getName(address)})" +:
@@ -124,6 +273,8 @@ object Verilog {
       result ++= mod.outputs.map(s => s"  output ${if (s.size != 1) s"[${s.size - 1}:0] " else ""}${getName(s)}").mkString(",\n")
       result ++= ");\n\n"
       result ++= declarations
+      result ++= mergedDecls
+      result ++= constRomDecls
       result ++= assignments
       result ++= combinatorial
       if sequential.nonEmpty then

@@ -1,0 +1,20 @@
+Fitter Status : Successful - Tue Mar 24 15:47:20 2026
+Quartus Prime Version : 25.3.1 Build 100 12/19/2025 Patches 1.02 SC Pro Edition
+Revision Name : quartus_sgen_dftcompact_2048_4x18_ac135
+Top-level Entity Name : main
+Family : Agilex 3
+Device : A3CW135BM16AE6S
+Timing Models : Final
+Power Models : Final
+Device Status : Final
+Logic utilization (in ALMs) : 972 / 45,800 ( 2 % )
+Total dedicated logic registers : 3857
+Total pins : 0 / 254 ( 0 % )
+Total block memory bits : 155,648 / 7,229,440 ( 2 % )
+Total RAM Blocks : 11 / 353 ( 3 % )
+Total DSP Blocks : 4 / 184 ( 2 % )
+Total GTS Transceiver Channels : 0 / 4 ( 0 % )
+Total HSSI Ethernet Channels : 0 / 1 ( 0 % )
+Total HSSI PCIEs : 0 / 1 ( 0 % )
+Total HSSI HPS : 0 / 1 ( 0 % )
+Total PLLs : 0 / 11 ( 0 % )

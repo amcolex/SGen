@@ -19,6 +19,7 @@ The generator emits a Verilog file ready to be synthesised on any FPGA.
 
 * 📄 **Technical overview** – https://acl.inf.ethz.ch/research/hardware
 * 🐞 **Bug reports / feature requests** – contact [F. Serre](https://fserre.github.io/)
+* 🧭 **Local project baseline** – see `docs/project-summary.md` for the current generated cores, synthesis flows, and report locations in this repo.
 
 ---
 
